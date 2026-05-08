@@ -760,11 +760,11 @@ with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as
                 with gr.Row():
                     trim_start_sl = gr.Slider(
                         minimum=0, maximum=MAX_VIDEO_SEC - 1,
-                        value=0, step=1, label='Start (sec)',
+                        value=0, step=1, label='เริ่ม (วินาที)',
                     )
                     trim_end_sl = gr.Slider(
                         minimum=1, maximum=MAX_VIDEO_SEC,
-                        value=MAX_VIDEO_SEC, step=1, label='End (sec)',
+                        value=MAX_VIDEO_SEC, step=1, label='สิ้นสุด (วินาที)',
                     )
             trim_enable_cb.change(
                 fn=lambda on: gr.update(visible=on),
@@ -773,19 +773,19 @@ with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as
             )
 
             query_input = gr.Textbox(
-                label='Search query (English)',
-                placeholder='e.g. Chef makes pizza and cuts it up.',
+                label='คำค้นหา (ภาษาอังกฤษ)',
+                placeholder='เช่น The host asks a question.',
                 lines=2,
             )
             # Top-K controls
             limit_k_cb = gr.Checkbox(
-                label='Limit number of highlights',
+                label='จำกัดจำนวนไฮไลต์',
                 value=True,
             )
             with gr.Group(visible=True) as top_k_group:
                 top_k_slider = gr.Slider(
                     minimum=1, maximum=MAX_CLIPS, value=3, step=1,
-                    label='Number of highlights (Top-K)',
+                    label='จำนวนไฮไลต์ที่ต้องการ',
                 )
             limit_k_cb.change(
                 fn=lambda on: gr.update(visible=on),
@@ -794,35 +794,35 @@ with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as
             )
             max_dur_slider = gr.Slider(
                 minimum=5, maximum=300, value=30, step=5,
-                label='Max highlight duration (sec)',
+                label='ความยาวสูงสุดต่อไฮไลต์ (วินาที)',
             )
             portrait_mode = gr.Radio(
-                choices=['Off', 'Largest face', 'All faces',
-                         'Most active face', 'Auto-pan faces', 'CLIP-guided'],
-                value='Off',
-                label='Portrait 9:16 crop mode',
+                choices=['ปิด', 'ใบหน้าใหญ่สุด', 'ทุกใบหน้า',
+                         'ใบหน้าที่เคลื่อนไหวมากสุด', 'แพนตามใบหน้า', 'CLIP-guided'],
+                value='ปิด',
+                label='โหมดครอปแนวตั้ง 9:16',
             )
             scene_cut_cb = gr.Checkbox(
-                label='Detect scene cuts (show timestamps where scene changes)',
+                label='ตรวจจับการตัดฉาก (แสดงเวลาที่ฉากเปลี่ยน)',
                 value=False,
             )
-            submit_btn = gr.Button('Search and Cut Highlights', variant='primary', size='lg')
+            submit_btn = gr.Button('ค้นหาและตัดไฮไลต์', variant='primary', size='lg')
 
             gr.Examples(
                 examples=[[EXAMPLE_VIDEO, 'Chef makes pizza and cuts it up.', True, 3, 30,
-                           False, 0, MAX_VIDEO_SEC, 'Off', False]],
+                           False, 0, MAX_VIDEO_SEC, 'ปิด', False]],
                 inputs=[video_input, query_input, limit_k_cb, top_k_slider, max_dur_slider,
                         trim_enable_cb, trim_start_sl, trim_end_sl, portrait_mode, scene_cut_cb],
-                label='Example',
+                label='ตัวอย่าง',
             )
 
         # ── Right: Output panel ──────────────────────────────────────────
         with gr.Column(scale=1):
-            gr.Markdown('## Results')
+            gr.Markdown('## ผลลัพธ์')
             status_md    = gr.Markdown(visible=False)
             scene_cuts_md = gr.Markdown(visible=False)
             debug_gallery = gr.Gallery(
-                label='Portrait crop debug — landscape frames with face boxes (green) and crop window (red)',
+                label='ดีบัก Portrait Crop — กรอบ เขียว=ใบหน้า, ฟ้า=ลำตัว, แดง=พื้นที่ครอป',
                 visible=False,
                 columns=3,
                 object_fit='contain',
@@ -833,7 +833,7 @@ with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as
             for i in range(MAX_CLIPS):
                 lbl = gr.Markdown(visible=False)
                 vid = gr.Video(
-                    label=f'Highlight #{i + 1}',
+                    label=f'ไฮไลต์ #{i + 1}',
                     visible=False,
                     interactive=False,
                 )
@@ -846,8 +846,8 @@ with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as
         blank_labels = [gr.update(visible=False)] * MAX_CLIPS
         blank_clips  = [gr.update(visible=False)] * MAX_CLIPS
         yield ([gr.update(
-                    value='> **Processing...** AI is analysing your video. '
-                          'Please wait \u2014 this may take a while for long videos.',
+                    value='> **กำลังประมวลผล...** AI กำลังวิเคราะห์วิดีโอของคุณ '
+                          'กรุณารอสักครู่ \u2014 วิดีโอยาวอาจใช้เวลานาน',
                     visible=True),
                 gr.update(visible=False),
                 gr.update(visible=False)]
