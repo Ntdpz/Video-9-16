@@ -1,3 +1,13 @@
+"""
+Run this script once to regenerate app.py with all new features:
+  - Trim controls (enable/disable + start/end sliders)
+  - Portrait 9:16 with CLIP-guided crop following the query subject
+"""
+import pathlib, os
+
+ROOT = pathlib.Path(__file__).parent
+
+APP = '''\
 import sys
 import os
 
@@ -400,7 +410,7 @@ def detect_scene_cuts(video_path, threshold=0.35):
              '-select_streams', 'v',
              '-show_entries', 'frame=pkt_pts_time,pict_type',
              '-f', 'lavfi',
-             f'movie={video_path},select=gt(scene\\,{threshold})'],
+             f'movie={video_path},select=gt(scene\\\\,{threshold})'],
             capture_output=True, text=True, timeout=120,
         )
         timestamps = []
@@ -727,9 +737,9 @@ def process(video_path, query, limit_k, top_k, max_dur,
 with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as demo:
 
     gr.Markdown(
-        '# AI Video Highlights Extractor\n'
+        '# AI Video Highlights Extractor\\n'
         'Find moments in your video using AI. '
-        'Upload a video, type what you are looking for, and press Search.\n'
+        'Upload a video, type what you are looking for, and press Search.\\n'
         '> Supports videos up to **150 minutes** (any common format: MP4, MKV, MOV, AVI…)'
     )
 
@@ -837,7 +847,7 @@ with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as
         blank_clips  = [gr.update(visible=False)] * MAX_CLIPS
         yield ([gr.update(
                     value='> **Processing...** AI is analysing your video. '
-                          'Please wait — this may take a while for long videos.',
+                          'Please wait \u2014 this may take a while for long videos.',
                     visible=True),
                 gr.update(visible=False),
                 gr.update(visible=False)]
@@ -874,3 +884,8 @@ with gr.Blocks(title='AI Video Highlights Extractor', theme=gr.themes.Soft()) as
 
 if __name__ == '__main__':
     demo.launch(share=False, inbrowser=True)
+'''
+
+out = ROOT / 'app.py'
+out.write_text(APP, encoding='utf-8')
+print(f'Written {out.stat().st_size} bytes to {out}')
